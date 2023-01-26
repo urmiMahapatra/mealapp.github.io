@@ -19,28 +19,23 @@ body{
 
 }
 
-.meal-wrapper{
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 5%;
-    text-align: center;
-}
-
 .header {
     display:flex;
     flex-direction: row;
-    max-width: 1280px;
-    height: 20px;
+    max-width: 100%;
+    height: px;
+    background-color: rgb(50, 20, 30, 0.6);
     /* margin: 0 auto; */
-    padding: 2rem 1rem 2rem 5%;
+    /* padding: 2rem 1rem 2rem 5%; */
     gap: 2rem;
-    text-align: left;
 }
 
 .header-refs {
+    padding-left: 5%;
     font-weight: 300;
     font-size: 2rem;
-    color:rgb(236, 122, 122);
+    font-family: sans-serif;
+    color:white;
     /* box-sizing: border-box; */
     /* position: absolute; */
     /* font-size: 20px; */
@@ -49,6 +44,21 @@ body{
 
 .header-refs:hover{
     color: blue;
+}
+
+.meal-wrapper{
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 5%;
+    text-align: center;
+}
+
+.fav-wrapper{
+    display: none;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 5%;
+    text-align: center;
 }
 
 .btn{
@@ -333,6 +343,11 @@ body{
         gap: 2rem;
     
     }
+    #fav-meal-list{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
     .meal-item{
         margin: 0;
 
@@ -345,5 +360,10 @@ body{
     #meal-list{
         display: grid;
         grid-template-columns: repeat(3, 1fr);
+    }
+    #fav-meal-list{
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
     }
 }
