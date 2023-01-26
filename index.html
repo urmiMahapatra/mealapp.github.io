@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Your Meal App </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+        integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="#" class="header-refs" id="homeBtn">Home</a>
+            <a href="#" class="header-refs" id="favBtn">Favourites</a>
+        </div>
+        <div class="meal-wrapper">
+            <div class="meal-search">
+                <h2 class="title">Your Meal App</h2>
+                <blockquote>"A Recipe Has No Soul.You,As The Cook,must Bring The Soul To The Recipe"<br>
+                    <cite>-Thomas Keller</cite>
+                </blockquote>
+                <div class="meal-search-box">
+                    <input type="text" class="search-content" placeholder="Enter Meal Name" id="search-input">
+                    <button type="submit" id="search-btn" class="search-btn-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="result">
+                <h2 class="title">Your Meals Are Here:</h2>
+                <div id="meal-list">
+                    <!-- meal item -->
+                    <!-- <div class="meal-item">
+                        <div class="meal-image">
+                            <img src="burger.jpg" alt="food">
+                        </div>
+                        <div class="name">
+                            <h3>Burger</h3>
+                            <a href="#" class="detail-btn">Get Meal details</a>
+                        </div>
+                    </div> -->
+                    <!-- end of meal item -->
+                </div>
+            </div>
+            <div class="meal-details">
+                <!-- meal deails close btn -->
+                <button type="button" class="btn-details-close-btn" id="details-close-btn">
+                    <i class="fas fa-window-close"></i>
+                </button>
+                <!-- meal content -->
+                <div class="meal-details-content">
+                    <!-- <h2 class="meal-title">Meals Name Here</h2>
+                    <p class="meals-category">Category Name</p>
+                    <div class="Instruction">
+                        <h3>Instruction:</h3>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga illum odit dolorem aspernatur ad dignissimos corrupti neque. Culpa perspiciatis incidunt temporibus laboriosam omnis neque natus totam optio! Quod, sapiente velit. 
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi, in provident quas rem, accusamus ipsam ut voluptas quod necessitatibus ullam quo! Amet veniam hic illum quidem fugiat corporis dolorem assumenda.  
+                    </div>
+                    <div class="detail-meal-img">
+                        <img src ='burger.jpg' alt="food">
+                    </div>
+                    <div class="meal-link">
+                        <a href="#" target ="_blank">Watch Video</a>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
