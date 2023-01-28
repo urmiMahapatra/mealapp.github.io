@@ -1,85 +1,87 @@
 const searchBtn = document.getElementById('search-btn');
 const mealList = document.getElementById('meal-list');
+const favMeals = document.getElementById('fav-meal-list');
 const mealDetailsContent = document.querySelector('.meal-details-content');
 const mealCloseBtn = document.getElementById('details-close-btn');
+const homeBtn = document.getElementById('home-btn');
+const favBtn = document.getElementById('fav-btn');
+const mealWrapper = document.getElementById('meal-wrapper-parent');
+const favWrapper = document.getElementById('fav-wrapper-parent');
+
+// var favMealList = '{"meals": [ { "strMeal": "None", "strMealThumb": "None", "idMeal": "None" } ] }'
+var favMealList = '{"meals": [] }'
+const favMealMap = new Map();
 
 // event listner
 searchBtn.addEventListener('click', getMealList);
-mealList.addEventListener('click' , getMealReciepe);
-mealList.addEventListener('click' , addFavourite);
-favBtn.addEventListener('click' , getFavMealList);
+mealList.addEventListener('click', getMealReciepe);
+homeBtn.addEventListener('click', showHomePage);
+favBtn.addEventListener('click', showFavoritesPage);
 
 mealCloseBtn.addEventListener('click', () => {
     mealDetailsContent.parentElement.classList.remove('showRecipe');
 });
 
-// var favMealList = '{"meals": [ { "strMeal": "None", "strMealThumb": "None", "idMeal": "None" } ] }'
-var favMealList = '{"meals": [] }'
-
-// get meal list that matches with the ingerdents
-if(mealList == null) {
-    console.log("mealList is null");
-} else {
-    console.log("mealList is not null");
+function showHomePage() {
+    mealWrapper.style.display = "block";
+    favWrapper.style.display = "none";
 }
 
-if(searchBtn == null){
-    console.log("search is null");
-} else {
-    console.log("search is not null");
+function showFavoritesPage() {
+    getFavMealList();
+    mealWrapper.style.display = "none";
+    favWrapper.style.display = "block";
 }
 
-function getMealList(){
+
+function getMealList() {
     let searchInputTxt = document.getElementById('search-input').value.trim();
-    console.log("PKS " + searchInputTxt);
-    fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${searchInputTxt}`)
-    .then(response => response.json())
-    .then(data => {
-        let html = "";
-        if(data.meals){
-            data.meals.forEach(meal => {
-                html += `
+    fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${searchInputTxt}`)
+        .then(response => response.json())
+        .then(data => {
+            let html = "";
+            if (data.meals) {
+                data.meals.forEach(meal => {
+                    html += `
                     <div class = "meal-item" data-id = "${meal.idMeal}">
                         <div class = "meal-img">
                             <img src = "${meal.strMealThumb}" alt = "food">     
                         </div>
-                        <img src = "./heart-solid.svg" class = "fav-icon-img">
+                        <i class='fa-solid fa-heart' id ="favImg" style = "color: blue" onclick="colorblue(this, '${meal.idMeal}', '${meal.strMeal}', '${meal.strMealThumb}') "></i>
                         <div class = "meal-name">
                             <h3>${meal.strMeal}</h3>
                             <a href = "#" class = "detail-btn">Get Recipe Details</a>
                         </div>
                     </div>
                 `;
-            });
-            mealList.classList.remove('notFound');
-        } else{
-            html = "Sorry, we didn't find any meal!";
-            mealList.classList.add('notFound');
-        }
-        mealList.innerHTML = html;
-    });
+                });
+                mealList.classList.remove('notFound');
+            } else {
+                html = "Sorry, we didn't find any meal!";
+                mealList.classList.add('notFound');
+            }
+            mealList.innerHTML = html;
+
+        });
 }
 
 
 // get meal reciepe of the meal
 
-function getMealReciepe(e){
+function getMealReciepe(e) {
     e.preventDefault();
-    console.log("PKS 101 " + e)
-    if(e.target.classList.contains('detail-btn')){
-       
+    if (e.target.classList.contains('detail-btn')) {
         let mealItem = e.target.parentElement.parentElement;
         fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealItem.dataset.id}`)
-        .then(response =>response.json())
-        .then(data => mealRecipeModal(data.meals));
-            
-        }
+            .then(response => response.json())
+            .then(data => mealRecipeModal(data.meals));
+
+    }
 }
 
 // create a modal
 
-function mealRecipeModal(meal){
-    console.log(meal);
+function mealRecipeModal(meal) {
     meal = meal[0];
     let html = `
     <h2 class="meal-title">${meal.strMeal}</h2>
@@ -101,51 +103,92 @@ function mealRecipeModal(meal){
 
 // favourite button call
 
-function addFavourite (e) {
-    e.preventDefault();
 
-    if(e.target.classList.contains('fav-icon-img')) {
-        let mealItem = e.target.parentElement;
-        fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealItem.dataset.id}`)
-        .then(response =>response.json())
-        .then(data => AddToFavoriteList(data.meals));
-
-    }
-}
-
-function AddToFavoriteList(meal) {
-    meal=meal[0];
+function AddToFavoriteList(mealId, mealStr, mealThumb) {
+    // meal = meal[0];
+    var retStatus = 0;
     var obj = JSON.parse(favMealList);
-    let strMeal = `${meal.strMeal}`;
-    console.log("PKS strMeal " + strMeal);
-    obj['meals'].push({"strMeal": strMeal, "strMealThumb":`${meal.strMealThumb}`, "idMeal": `${meal.idMeal}`});
-    favMealList = JSON.stringify(obj);
 
+
+    var newObj = JSON.parse('{"strMeal": "' + mealStr + '", "strMealThumb": "' + mealThumb + '", "idMeal": "' + mealId + '"}');
+    var x = favMealMap.get(mealId);
+
+    if (favMealMap.get(mealId) != undefined) {
+        var index = getMealIndex(obj, mealId);
+        favMealMap.delete(mealId);
+        delete obj.meals[index];
+        retStatus = 0;
+    } else {
+        favMealMap.set(mealId, "true");
+        obj['meals'].push(newObj);
+        retStatus = 1;
+    }
+    favMealList = prepareFavMealJsonArr(obj);
+    return retStatus;
 }
-function getFavMealList(){
-     let html = "";
-     var favMeal = JSON.parse(favMealList);
-        if(favMeal.meals){
-            favMeal.meals.forEach(meal => {
-                html += `
+
+function colorblue(element, mealId, mealStr, mealThumb) {
+    let mealItem = element.parentElement;
+
+    // element.style.color = "red";
+    var ret = AddToFavoriteList(mealId, mealStr, mealThumb);
+    if(ret == 1) {
+        element.style.color = "red";
+    } else {
+        element.style.color = "blue";
+    }
+    
+}
+
+
+function prepareFavMealJsonArr(favJsonObj) {
+    var obj = JSON.parse('{ "meals": [] }');
+    for (var i = 0; i < favJsonObj.meals.length; i++) {
+        if (favJsonObj.meals[i] != null) {
+            obj.meals.push(favJsonObj.meals[i]);
+        }
+    }
+    var newObjStr = JSON.stringify(obj);
+    return newObjStr;
+}
+
+function getMealIndex(favMeals, mealId) {
+    var index = 0;
+    if (favMeals.meals) {
+        for (var i = 0; i < favMeals.meals.length; i++) {
+            var meal = favMeals.meals[i];
+            if (meal.idMeal == mealId) {
+                index = i;
+                break;
+            }
+        }
+    }
+    return index;
+}
+
+function getFavMealList() {
+    // document.getElementById()
+    let html = "";
+    var favMeal = JSON.parse(favMealList);
+    if (favMeal.meals) {
+        favMeal.meals.forEach(meal => {
+            html += `
                     <div class = "meal-item" data-id = "${meal.idMeal}">
                         <div class = "meal-img">
                             <img src = "${meal.strMealThumb}" alt = "food">     
                         </div>
-                        <img src = "./heart-solid.svg" class = "fav-icon-img">
                         <div class = "meal-name">
                             <h3>${meal.strMeal}</h3>
                             <a href = "#" class = "detail-btn">Get Recipe Details</a>
                         </div>
                     </div>
                 `;
-            });
-        }
-        mealDetailsContent.innerHTML = html;
-        mealDetailsContent.parentElement.classList.add('showRecipe');
-    
+        });
     }
+    favMeals.innerHTML = html;
+
+}
 
 
 
-        
+
