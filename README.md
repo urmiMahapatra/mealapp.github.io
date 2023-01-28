@@ -1,5 +1,4 @@
-## https://urmimahapatra.github.io/mealapp.github.io/
-# Meal App
+## [Meal App](https://urmimahapatra.github.io/mealapp.github.io/)
 ## This is a mealfinder site where you can see the ingredents and watch the video of making your favourite meal.
    ### • you can search the meal by an ingredents.
    ### • you can add it in favourite.
