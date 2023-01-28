@@ -14,9 +14,9 @@ const favMealMap = new Map();
 
 // event listner
 searchBtn.addEventListener('click', getMealList);
-mealList.addEventListener('click' , getMealReciepe);
-homeBtn.addEventListener('click' , showHomePage);
-favBtn.addEventListener('click' , showFavoritesPage);
+mealList.addEventListener('click', getMealReciepe);
+homeBtn.addEventListener('click', showHomePage);
+favBtn.addEventListener('click', showFavoritesPage);
 
 mealCloseBtn.addEventListener('click', () => {
     mealDetailsContent.parentElement.classList.remove('showRecipe');
@@ -34,58 +34,54 @@ function showFavoritesPage() {
 }
 
 
-function getMealList(){
+function getMealList() {
     let searchInputTxt = document.getElementById('search-input').value.trim();
-    console.log("PKS " + searchInputTxt);
     fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${searchInputTxt}`)
-    .then(response => response.json())
-    .then(data => {
-        let html = "";
-        if(data.meals){
-            data.meals.forEach(meal => {
-                html += `
+        .then(response => response.json())
+        .then(data => {
+            let html = "";
+            if (data.meals) {
+                data.meals.forEach(meal => {
+                    html += `
                     <div class = "meal-item" data-id = "${meal.idMeal}">
                         <div class = "meal-img">
                             <img src = "${meal.strMealThumb}" alt = "food">     
                         </div>
-                        <img src = "./heart-solid.svg" class = "fav-icon-img id="fav-img">
+                        <i class='fa-solid fa-heart' id ="favImg" style = "color: blue" onclick="colorblue(this, '${meal.idMeal}', '${meal.strMeal}', '${meal.strMealThumb}') "></i>
                         <div class = "meal-name">
                             <h3>${meal.strMeal}</h3>
                             <a href = "#" class = "detail-btn">Get Recipe Details</a>
                         </div>
                     </div>
                 `;
-            });
-            mealList.classList.remove('notFound');
-        } else{
-            html = "Sorry, we didn't find any meal!";
-            mealList.classList.add('notFound');
-        }
-        mealList.innerHTML = html;
-        console.log(html);
+                });
+                mealList.classList.remove('notFound');
+            } else {
+                html = "Sorry, we didn't find any meal!";
+                mealList.classList.add('notFound');
+            }
+            mealList.innerHTML = html;
 
-    });
+        });
 }
 
 
 // get meal reciepe of the meal
 
-function getMealReciepe(e){
+function getMealReciepe(e) {
     e.preventDefault();
-    if(e.target.classList.contains('detail-btn')){
+    if (e.target.classList.contains('detail-btn')) {
         let mealItem = e.target.parentElement.parentElement;
-        console.log(mealItem.dataset.id);
         fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealItem.dataset.id}`)
-        .then(response =>response.json())
-        .then(data => mealRecipeModal(data.meals));
-            
-        }
+            .then(response => response.json())
+            .then(data => mealRecipeModal(data.meals));
+
+    }
 }
 
 // create a modal
 
-function mealRecipeModal(meal){
-    console.log(meal);
+function mealRecipeModal(meal) {
     meal = meal[0];
     let html = `
     <h2 class="meal-title">${meal.strMeal}</h2>
@@ -108,36 +104,47 @@ function mealRecipeModal(meal){
 // favourite button call
 
 
-function AddToFavoriteList(meal) {
-    meal=meal[0];
+function AddToFavoriteList(mealId, mealStr, mealThumb) {
+    // meal = meal[0];
+    var retStatus = 0;
     var obj = JSON.parse(favMealList);
-    let strMeal = `${meal.strMeal}`;
-    let strMealId = `${meal.idMeal}`;
 
-    var newObj = JSON.parse('{"strMeal": "' + strMeal + '", "strMealThumb": "' + `${meal.strMealThumb}` + '", "idMeal": "' +`${meal.idMeal}` + '"}');
-    var x = favMealMap.get(strMealId);
-    
-    if(favMealMap.get(strMealId) != undefined) {
 
-        var index = getMealIndex(obj, strMealId);
-        favMealMap.delete(strMealId);
+    var newObj = JSON.parse('{"strMeal": "' + mealStr + '", "strMealThumb": "' + mealThumb + '", "idMeal": "' + mealId + '"}');
+    var x = favMealMap.get(mealId);
+
+    if (favMealMap.get(mealId) != undefined) {
+        var index = getMealIndex(obj, mealId);
+        favMealMap.delete(mealId);
         delete obj.meals[index];
+        retStatus = 0;
     } else {
-        favMealMap.set(strMealId, "true");
+        favMealMap.set(mealId, "true");
         obj['meals'].push(newObj);
- 
-
+        retStatus = 1;
     }
     favMealList = prepareFavMealJsonArr(obj);
-    // favMealList = JSON.stringify(obj);
-    console.log("PKS strMeal 206 " + favMealList);
+    return retStatus;
 }
+
+function colorblue(element, mealId, mealStr, mealThumb) {
+    let mealItem = element.parentElement;
+
+    // element.style.color = "red";
+    var ret = AddToFavoriteList(mealId, mealStr, mealThumb);
+    if(ret == 1) {
+        element.style.color = "red";
+    } else {
+        element.style.color = "blue";
+    }
+    
+}
+
 
 function prepareFavMealJsonArr(favJsonObj) {
     var obj = JSON.parse('{ "meals": [] }');
-    for(var i = 0; i < favJsonObj.meals.length; i++) {
-        if(favJsonObj.meals[i] != null) {
-            console.log("PKS strMeal 601 " + favJsonObj.meals[i]);
+    for (var i = 0; i < favJsonObj.meals.length; i++) {
+        if (favJsonObj.meals[i] != null) {
             obj.meals.push(favJsonObj.meals[i]);
         }
     }
@@ -147,10 +154,10 @@ function prepareFavMealJsonArr(favJsonObj) {
 
 function getMealIndex(favMeals, mealId) {
     var index = 0;
-    if(favMeals.meals) {
-        for(var i = 0; i < favMeals.meals.length; i++) {
+    if (favMeals.meals) {
+        for (var i = 0; i < favMeals.meals.length; i++) {
             var meal = favMeals.meals[i];
-            if(meal.idMeal == mealId) {
+            if (meal.idMeal == mealId) {
                 index = i;
                 break;
             }
@@ -161,11 +168,11 @@ function getMealIndex(favMeals, mealId) {
 
 function getFavMealList() {
     // document.getElementById()
-     let html = "";
-     var favMeal = JSON.parse(favMealList);
-        if(favMeal.meals){
-            favMeal.meals.forEach(meal => {
-                html += `
+    let html = "";
+    var favMeal = JSON.parse(favMealList);
+    if (favMeal.meals) {
+        favMeal.meals.forEach(meal => {
+            html += `
                     <div class = "meal-item" data-id = "${meal.idMeal}">
                         <div class = "meal-img">
                             <img src = "${meal.strMealThumb}" alt = "food">     
@@ -176,12 +183,12 @@ function getFavMealList() {
                         </div>
                     </div>
                 `;
-            });
-        }
-        favMeals.innerHTML = html;
-
+        });
     }
+    favMeals.innerHTML = html;
+
+}
 
 
 
-        
+

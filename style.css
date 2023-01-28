@@ -195,11 +195,14 @@ body{
     text-decoration: underline;
 }
 
-.fav-icon-img {
-    color: rgb(56, 5, 5);
-    width: 50px;
+#favImg {
     cursor: pointer;
 }
+
+/* .fa-solid fa-heart img {
+    color: rgb(255, 0, 0);
+    cursor: pointer;
+} */
 
 
 .meal-details{
